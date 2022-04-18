@@ -14,7 +14,7 @@ class Test(unittest.TestCase):
     def setUp(self):
         # with urllib.request.urlopen(TEST_LOG) as f:
         #     self.data = f.read().decode('utf-8').split('\n')
-        with open('test.log') as f:
+        with open(r'logs_classes\test.log') as f:
             self.data = f.read().split('\n')
 
         self.stat = t.make_stat()
@@ -22,7 +22,6 @@ class Test(unittest.TestCase):
         for line in filter(lambda s: 'OPTION' not in s, self.data):
             self.stat.add_line(line)
 
-        [print(k, v) for k, v in self.stat.results().items()]
         self.assertDictEqual(self.stat.results(), TEST)
 
 

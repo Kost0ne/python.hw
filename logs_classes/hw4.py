@@ -136,7 +136,7 @@ class Page():
         pages_names = pages.keys()
         max_avg_time = max(pages_avg_time, key=lambda x: x.avg_time())
         for name in pages_names:
-            if abs(pages[name].avg_time() - max_avg_time.avg_time()) < 0.1**10:
+            if abs(pages[name].avg_time() - max_avg_time.avg_time()) < 0.1**6:
                 return name
 
 
@@ -335,6 +335,49 @@ class LogStatTests(unittest.TestCase):
             'MostPopularPage': '',
             'SlowestAveragePage': '',
             'SlowestPage': ''}
+
+        self.assertDictEqual(test_method.results(), expected)
+
+    def test_slowest_average_page(self):
+        test_method = make_stat()
+
+        test_method.add_line(
+            '192.168.74.83 - - [08/Jul/2012:06:31:57 +0600]'
+            ' "GET /img/r.png HTTP/1.1" 304 211'
+            ' "http://callider/menu-top.php" "Mozilla/5.0 (compatible; MSIE'
+            ' 9.0; Windows NT 6.1; WOW64; Trident/5.0)" 170'
+        )
+
+        test_method.add_line(
+            '192.168.74.81 - - [09/Jul/2012:06:31:57 +0600]'
+            ' "GET /img/agraph.png HTTP/1.1" 304 211'
+            ' "http://callider/menu-top.php" "Mozilla/5.0 (compatible; MSIE'
+            ' 9.0; Windows NT 6.1; WOW64; Trident/5.0)" 170'
+        )
+
+        test_method.add_line(
+            '192.168.74.82 - - [09/Jul/2012:06:31:57 +0600]'
+            ' "GET /img/r.png HTTP/1.1" 304 211'
+            ' "http://callider/menu-top.php" "Mozilla/5.0 (compatible; MSIE'
+            ' 9.0; Windows NT 6.1; WOW64; Trident/5.0)" 170'
+        )
+
+        test_method.add_line(
+            '192.168.74.83 - - [08/Jul/2012:06:31:57 +0600]'
+            ' "GET /img/graph.png HTTP/1.1" 304 211'
+            ' "http://callider/menu-top.php" "Mozilla/5.0 (compatible; MSIE'
+            ' 9.0; Windows NT 6.1; WOW64; Trident/5.0)" 170'
+        )
+
+        expected = {
+            'FastestPage': '/img/graph.png',
+            'MostActiveClient': '192.168.74.83',
+            'MostActiveClientByDay': {date(2012, 7, 8): '192.168.74.83'},
+            'MostPopularBrowser': 'Mozilla/5.0 (compatible; MSIE'
+                                  ' 9.0; Windows NT 6.1; WOW64; Trident/5.0)',
+            'MostPopularPage': '/img/r.png',
+            'SlowestAveragePage': '/img/r.png',
+            'SlowestPage': '/img/graph.png'}
 
         self.assertDictEqual(test_method.results(), expected)
 
